@@ -24,6 +24,9 @@ def connect_rabbit():
         # Start consuming messages from inventory_events queue
         channel.basic_consume(queue='inventory_events', on_message_callback=inventory_service_callback, auto_ack=False)
 
+        # Start consuming messages from payment_event queue
+        channel.basic_consume(queue='payment_events', on_message_callback=inventory_service_callback, auto_ack=False)
+
         print("Started consuming events...")
         channel.start_consuming()
     except AMQPConnectionError as e:

@@ -1,10 +1,9 @@
-import boto3
+import requests
 
-aws_lambda = boto3.client('lambda', region_name='ap-south-1')
-aws_lambda_function = 'lambda_function_name'
+api_gateway_url = 'https://your-api-id.execute-api.your-region.amazonaws.com/prod/your-endpoint'
+headers = {
+    'x-api-key': 'your-api-key'
+}
 
-
-def lambda_invoke(*args, **kwargs):
-    print(args)
-    print(kwargs)
-    return aws_lambda.invoke()
+response = requests.post(api_gateway_url, json={'key': 'value'}, headers=headers)
+print(response.json())

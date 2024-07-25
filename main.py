@@ -4,6 +4,7 @@ from pika.exceptions import AMQPConnectionError, AMQPChannelError
 from variables import HOST
 from email import email_service_callback
 from inventory import inventory_service_callback
+from payment import payment_service_callback
 
 
 def connect_rabbit():
@@ -25,7 +26,7 @@ def connect_rabbit():
         channel.basic_consume(queue='inventory_events', on_message_callback=inventory_service_callback, auto_ack=False)
 
         # Start consuming messages from payment_event queue
-        channel.basic_consume(queue='payment_events', on_message_callback=inventory_service_callback, auto_ack=False)
+        channel.basic_consume(queue='payment_events', on_message_callback=payment_service_callback, auto_ack=False)
 
         print("Started consuming events...")
         channel.start_consuming()

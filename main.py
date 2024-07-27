@@ -1,7 +1,7 @@
 import pika
 from pika.exceptions import AMQPConnectionError, AMQPChannelError
 
-from variables import HOST
+from variables import HOST, USERNAME, PASSWORD, PORT
 from email_service import email_service_callback
 from inventory import inventory_service_callback
 from payment import payment_service_callback
@@ -9,7 +9,9 @@ from payment import payment_service_callback
 
 def connect_rabbit():
     try:
-        connection = pika.BlockingConnection(pika.ConnectionParameters(HOST))
+        credentials = pika.PlainCredentials(username=USERNAME, password=PASSWORD)
+        connection = pika.BlockingConnection(
+            pika.ConnectionParameters(host=HOST, port=PORT, credentials=credentials))
         channel = connection.channel()
 
         # Declare the queues for email and inventory services

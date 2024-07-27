@@ -2,7 +2,7 @@ import pika
 from pika.exceptions import AMQPConnectionError, AMQPChannelError
 
 from variables import HOST
-from email import email_service_callback
+from email_service import email_service_callback
 from inventory import inventory_service_callback
 from payment import payment_service_callback
 
@@ -15,6 +15,7 @@ def connect_rabbit():
         # Declare the queues for email and inventory services
         channel.queue_declare(queue='email_events', durable=True)
         channel.queue_declare(queue='inventory_events', durable=True)
+        channel.queue_declare(queue='payment_events', durable=True)
 
         # Set prefetch count for fair dispatch
         channel.basic_qos(prefetch_count=2)

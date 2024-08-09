@@ -1,7 +1,7 @@
 import pika
 from pika.exceptions import AMQPConnectionError, AMQPChannelError
 
-from variables import HOST, USERNAME, PASSWORD, PORT
+from variables import HOST, USERNAME, PASSWORD, PORT, EMAIL_QUEUE, INVENTORY_QUEUE, PAYMENTS_QUEUE
 from email_service import email_service_callback
 from inventory import inventory_service_callback
 from payment import payment_service_callback
@@ -15,21 +15,21 @@ def connect_rabbit():
         channel = connection.channel()
 
         # Declare the queues for email and inventory services
-        channel.queue_declare(queue='email_events', durable=True)
-        channel.queue_declare(queue='inventory_events', durable=True)
-        channel.queue_declare(queue='payment_events', durable=True)
+        channel.queue_declare(queue=EMAIL_QUEUE, durable=True)
+        channel.queue_declare(queue=INVENTORY_QUEUE, durable=True)
+        channel.queue_declare(queue=PAYMENTS_QUEUE, durable=True)
 
         # Set prefetch count for fair dispatch
         channel.basic_qos(prefetch_count=2)
 
         # Start consuming messages from email_events queue
-        channel.basic_consume(queue='email_events', on_message_callback=email_service_callback, auto_ack=False)
+        channel.basic_consume(queue=EMAIL_QUEUE, on_message_callback=email_service_callback, auto_ack=False)
 
         # Start consuming messages from inventory_events queue
-        channel.basic_consume(queue='inventory_events', on_message_callback=inventory_service_callback, auto_ack=False)
+        channel.basic_consume(queue=INVENTORY_QUEUE, on_message_callback=inventory_service_callback, auto_ack=False)
 
         # Start consuming messages from payment_event queue
-        channel.basic_consume(queue='payment_events', on_message_callback=payment_service_callback, auto_ack=False)
+        channel.basic_consume(queue=PAYMENTS_QUEUE, on_message_callback=payment_service_callback, auto_ack=False)
 
         print("Started consuming events...")
         channel.start_consuming()

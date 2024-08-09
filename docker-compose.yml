@@ -1,10 +1,32 @@
 version: '3.8'
 
 services:
-  consumer:
+  consumer-dev:
     build: .
     volumes:
       - .:/app
     restart: unless-stopped
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    environment:
+      - ENV=dev
+
+  consumer-uat:
+    build: .
+    volumes:
+      - .:/app
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - ENV=uat
+
+  consumer-prod:
+    build: .
+    volumes:
+      - .:/app
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - ENV=prod

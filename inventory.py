@@ -1,13 +1,14 @@
 import json
 
 from aws_lambda import call_lambda
+from schemas import InventoryProducer
 
 
 def inventory_service_callback(ch, method, properties, body):
     body = json.loads(body)
     data = {
         'operation': body['operation'],
-        'product': body['product'],
-        'quantity': body['quantity']
+        'products': body['product']
     }
-    call_lambda(data=data, ch=ch, method=method)
+    validated_data = InventoryProducer(**data)
+    call_lambda(data=validated_data.dict(), ch=ch, method=method)

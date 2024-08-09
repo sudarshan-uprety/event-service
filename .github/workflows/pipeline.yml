@@ -20,7 +20,18 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Create .env file
-      run: echo "${{ vars.ENV }}" > .env
+      run: |
+        run: |
+        if [[ "${{ github.ref }}" == "refs/heads/dev" ]]; then
+          echo "${{ vars.DEV_ENV }}" > .env
+        elif [[ "${{ github.ref }}" == "refs/heads/uat" ]]; then
+          echo "${{ vars.UAT_ENV }}" > .env
+        elif [[ "${{ github.ref }}" == "refs/heads/prod" ]]; then
+          echo "${{ vars.ProD_ENV }}" > .env
+        else
+          echo "This branch does not have corresponding environment variables"
+          exit 1
+        fi
 
     - name: rsync deployments
       uses: burnett01/rsync-deployments@master

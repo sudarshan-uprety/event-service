@@ -50,7 +50,7 @@ def get_logger(name):
         labels={"service": "event-consumer", "env": ENV}
     )
     loki_handler.setLevel(logging.INFO)
-    loki_handler.setFormatter(CustomFormatter('%(asctime)s - %(name)s - %(levelname)s - %(trace_id)s - %(message)s'))
+    loki_handler.setFormatter(CustomFormatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
 
     logger.addHandler(loki_handler)
 

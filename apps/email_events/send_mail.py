@@ -25,7 +25,7 @@ def register_mail(to, otp, name):
 
 def forget_password_mail(to, otp, name):
     mail = connect_mail()
-    template = templates.get_template('forget_password_mail.html')
+    template = templates.get_template('forget_password_email.html')
     content = template.render(otp=otp, name=name)
 
     mail.send(

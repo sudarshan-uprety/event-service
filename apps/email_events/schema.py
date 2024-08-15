@@ -27,3 +27,17 @@ class ForgetPasswordEmail(BaseModel):
     to: EmailStr
     otp: str
     full_name: str
+
+
+class ProductItem(BaseModel):
+    product_id: str
+    quantity: int
+
+
+class OrderEventEmail(BaseModel):
+    trace_id: str
+    event_name: str
+    to: EmailStr
+    product: list[ProductItem]
+    total_price: float
+    vendor_name: str

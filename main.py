@@ -1,10 +1,10 @@
 import pika
 from pika.exceptions import AMQPConnectionError, AMQPChannelError
 
-from variables import HOST, USERNAME, PASSWORD, PORT, EMAIL_QUEUE, INVENTORY_QUEUE, PAYMENTS_QUEUE
-from email_service import email_service_callback
-from inventory import inventory_service_callback
-from payment import payment_service_callback
+from utils.variables import HOST, USERNAME, PASSWORD, PORT, EMAIL_QUEUE, INVENTORY_QUEUE, PAYMENTS_QUEUE
+from apps.email_events.call_back import email_service_callback
+from apps.lambda_events.call_back import inventory_service_callback
+from apps.payment_events.call_back import payment_service_callback
 
 
 def connect_rabbit():

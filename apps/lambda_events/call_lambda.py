@@ -1,7 +1,7 @@
 import requests
 import json
 
-from variables import LAMBDA_API, LAMBDA_API_KEY
+from utils.variables import LAMBDA_API, LAMBDA_API_KEY
 
 
 def call_lambda(data: dict, ch, method):

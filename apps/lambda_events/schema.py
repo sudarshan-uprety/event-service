@@ -9,5 +9,6 @@ class Product(BaseModel):
 
 
 class InventoryProducer(BaseModel):
+    trace_id: str
     operation: str
     products: List[Product]

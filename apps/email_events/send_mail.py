@@ -1,13 +1,21 @@
-from redmail import gmail
+from redmail import EmailSender
 
-from utils.variables import EMAIL_SENDER, EMAIL_PASSWORD
+from utils.variables import EMAIL_SENDER, EMAIL_PASSWORD, EMAIL_HOST, EMAIL_PORT
 from utils.templates import templates
 
 
 def connect_mail():
-    gmail.username = EMAIL_SENDER
-    gmail.password = EMAIL_PASSWORD
-    return gmail
+    try:
+        mail = EmailSender(
+            host=EMAIL_HOST,
+            port=EMAIL_PORT,
+            username=EMAIL_SENDER,
+            password=EMAIL_PASSWORD,
+
+        )
+        return mail
+    except Exception as e:
+        print(e)
 
 
 def register_mail(to, otp, name):

@@ -1,4 +1,6 @@
 from pydantic import BaseModel, EmailStr
+from typing import List
+from datetime import datetime
 
 
 # class RegisterMail(BaseModel):
@@ -11,6 +13,19 @@ from pydantic import BaseModel, EmailStr
 #     otp: str
 #     name: str
 #     to: EmailStr
+
+class Address(BaseModel):
+    street: str
+    city: str
+    state: str
+    zip_code: str
+    country: str
+
+
+class PaymentInfo(BaseModel):
+    payment_id: str
+    payment_amount: float
+    payment_type: str
 
 
 class RegisterEmail(BaseModel):
@@ -38,6 +53,14 @@ class OrderEventEmail(BaseModel):
     trace_id: str
     event_name: str
     to: EmailStr
-    product: list[ProductItem]
+    products: List[ProductItem]
     total_price: float
     vendor_name: str
+    order_id: str
+    customer_name: str
+    customer_phone: str
+    delivery_address: str
+    payment_id: str
+    payment_amount: float
+    payment_type: str
+    payment_service: str

@@ -18,7 +18,7 @@
             width: 150px;
             margin: 0 auto;
         }
-        .order-details {
+        .order-details, .customer-details, .payment-details {
             margin: 20px 0;
         }
         .order-details table {
@@ -45,8 +45,21 @@
         <h1>Order Confirmation</h1>
     </div>
 
+    <div class="customer-details">
+        <h3>Customer Information</h3>
+        <p><strong>Name:</strong> {{ customer_name }}</p>
+        <p><strong>Email:</strong> {{ customer_email }}</p>
+        <p><strong>Contact Number:</strong> {{ customer_phone }}</p>
+        <h4>Delivery Address:</h4>
+        <p>
+            {{ delivery_address.street }}<br>
+            {{ delivery_address.city }}, {{ delivery_address.state }} {{ delivery_address.zip_code }}<br>
+            {{ delivery_address.country }}
+        </p>
+    </div>
+
     <div class="order-details">
-        <h2>Order #123456</h2>
+        <h2>Order #{{ order_number }}</h2>
         <p>Thank you for your purchase! Below are your order details:</p>
         <table>
             <tr>
@@ -54,26 +67,25 @@
                 <th>Quantity</th>
                 <th>Price</th>
             </tr>
+            {% for item in items %}
             <tr>
-                <td>Product 1</td>
-                <td>1</td>
-                <td>$10.00</td>
+                <td>{{ item.name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>${{ "%.2f"|format(item.price) }}</td>
             </tr>
+            {% endfor %}
             <tr>
-                <td>Product 2</td>
-                <td>2</td>
-                <td>$20.00</td>
-            </tr>
-            <tr>
-                <td>Product 3</td>
-                <td>1</td>
-                <td>$15.00</td>
-            </tr>
-            <tr>
-                <td colspan="2">Total</td>
-                <td>$45.00</td>
+                <td colspan="2"><strong>Total</strong></td>
+                <td><strong>${{ "%.2f"|format(total) }}</strong></td>
             </tr>
         </table>
+    </div>
+
+    <div class="payment-details">
+        <h3>Payment Information</h3>
+        <p><strong>Payment ID:</strong> {{ payment_id }}</p>
+        <p><strong>Amount Paid:</strong> ${{ "%.2f"|format(payment_amount) }}</p>
+        <p><strong>Payment Type:</strong> {{ payment_type }}</p>
     </div>
 
     <div class="footer">

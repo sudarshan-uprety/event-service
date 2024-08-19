@@ -47,20 +47,32 @@ def forget_password_mail(to, otp, name):
 
 def order_confirmation_mail(data: OrderEventEmail):
     mail = connect_mail()
-    template = templates.get_template('order_email.html')
+    template = templates.get_template('orders_email.html')
 
     context = {
-        'order_id': data.order_id,
-        'customer_name': data.customer_name,
+        'order_number': data.order_id,
+        'customer_name': data.full_name,
         'customer_email': data.to,
         'customer_phone': data.customer_phone,
-        'delivery_address': data.delivery_address,
-        'products': data.products,
-        'total_price': data.total_price,
-        'vendor_name': data.vendor_name,
+        'delivery_address': {
+            'street': data.delivery_address,
+            'city': '',
+            'state': '',
+            'zip_code': '',
+            'country': ''
+        },
+        'items': [
+            {
+                'name': item.name,
+                'quantity': item.quantity,
+                'price_per_item': item.price,
+                'total': item.total
+            } for item in data.products
+        ],
+        'total': data.total_price,
         'payment_id': data.payment_id,
         'payment_amount': data.payment_amount,
-        'payment_type': data.payment_type,
+        'payment_type': data.payment_method,
     }
     content = template.render(context)
 

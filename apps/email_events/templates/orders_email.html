@@ -52,34 +52,34 @@
         <p><strong>Contact Number:</strong> {{ customer_phone }}</p>
         <h4>Delivery Address:</h4>
         <p>
-            {{ delivery_address.street }}<br>
-            {{ delivery_address.city }}, {{ delivery_address.state }} {{ delivery_address.zip_code }}<br>
-            {{ delivery_address.country }}
+            {{ delivery_address.street }}
         </p>
     </div>
 
-    <div class="order-details">
-        <h2>Order #{{ order_number }}</h2>
-        <p>Thank you for your purchase! Below are your order details:</p>
-        <table>
-            <tr>
-                <th>Item</th>
-                <th>Quantity</th>
-                <th>Price</th>
-            </tr>
-            {% for item in items %}
-            <tr>
-                <td>{{ item.name }}</td>
-                <td>{{ item.quantity }}</td>
-                <td>${{ "%.2f"|format(item.price) }}</td>
-            </tr>
-            {% endfor %}
-            <tr>
-                <td colspan="2"><strong>Total</strong></td>
-                <td><strong>${{ "%.2f"|format(total) }}</strong></td>
-            </tr>
-        </table>
-    </div>
+<div class="order-details">
+    <h2>Order #{{ order_number }}</h2>
+    <p>Thank you for your purchase! Below are your order details:</p>
+    <table>
+        <tr>
+            <th>Item</th>
+            <th>Quantity</th>
+            <th>Price per Item</th>
+            <th>Total</th>
+        </tr>
+        {% for item in items %}
+        <tr>
+            <td>{{ item.name }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>${{ "%.2f"|format(item.price_per_item) }}</td>
+            <td>${{ "%.2f"|format(item.total) }}</td>
+        </tr>
+        {% endfor %}
+        <tr>
+            <td colspan="3"><strong>Total</strong></td>
+            <td><strong>${{ "%.2f"|format(total) }}</strong></td>
+        </tr>
+    </table>
+</div>
 
     <div class="payment-details">
         <h3>Payment Information</h3>

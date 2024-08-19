@@ -45,8 +45,10 @@ class ForgetPasswordEmail(BaseModel):
 
 
 class ProductItem(BaseModel):
-    product_id: str
+    name: str
     quantity: int
+    price: float
+    total: float
 
 
 class OrderEventEmail(BaseModel):
@@ -55,12 +57,12 @@ class OrderEventEmail(BaseModel):
     to: EmailStr
     products: List[ProductItem]
     total_price: float
-    vendor_name: str
     order_id: str
-    customer_name: str
+    full_name: str
     customer_phone: str
     delivery_address: str
     payment_id: str
     payment_amount: float
-    payment_type: str
-    payment_service: str
+    payment_method: str
+    payment_status: str
+    order_date: datetime

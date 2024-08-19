@@ -11,6 +11,8 @@ from utils.middleware import rabbitmq_event_handler
 def email_service_callback(ch, method, properties, body):
     body_dict = json.loads(body)
 
+    print(body_dict)
+
     if body_dict['event_name'] in [variables.REGISTER_EMAIL, variables.FORGET_PASSWORD_EMAIL]:
         data = RegisterEmail(**body_dict)
     elif body_dict['event_name'] == variables.ORDER_CONFIRMATION_EMAIL:

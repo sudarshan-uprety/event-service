@@ -10,5 +10,5 @@ class Product(BaseModel):
 
 class InventoryProducer(BaseModel):
     trace_id: str
-    operation: str
+    event_name: str
     products: List[Product]

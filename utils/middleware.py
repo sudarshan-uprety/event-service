@@ -1,64 +1,74 @@
 import json
 import uuid
 import functools
+import time  # For tracking process time
+
 from .log import logger, trace_id_var
 
-SENSITIVE_FIELDS = ["password", "token", "api_key"]
-
-
-def sanitize_payload(payload):
-    if isinstance(payload, str):
-        try:
-            payload = json.loads(payload)
-        except json.JSONDecodeError:
-            return payload
-
-    if isinstance(payload, dict):
-        return {k: sanitize_payload(v) if k not in SENSITIVE_FIELDS else "******" for k, v in payload.items()}
-    elif isinstance(payload, list):
-        return [sanitize_payload(item) for item in payload]
-    else:
-        return payload
+SENSITIVE_FIELDS = ["password", "confirm_password", "token", "api_key"]
 
 
 def rabbitmq_event_handler(func):
     @functools.wraps(func)
     def wrapper(ch, method, properties, body):
+        # accessing this variable outside of try catch because to pass it to logger even if the exception occurred.
+        start_time = time.time()
+        trace_id = str(uuid.uuid4())
+        message_data = json.loads(body)
         try:
-            # Parse the message body
-            message_data = json.loads(body)
-
-            # Extract trace_id from the message or generate a new one
-            trace_id = message_data.get('trace_id', str(uuid.uuid4()))
+            trace_id = message_data.get('trace_id', trace_id)
             trace_id_var.set(trace_id)
-
-            sanitized_body = sanitize_payload(message_data)
-            # logger.info(f"Received message: {method.delivery_tag}", extra={
-            #     "trace_id": trace_id,
-            #     "queue": method.routing_key,
-            #     "body": sanitized_body
-            # })
 
             result = func(ch, method, properties, body)
 
-            # logger.info(f"Processed message: {method.delivery_tag}", extra={
-            #     "trace_id": trace_id,
-            #     "queue": method.routing_key,
-            #     "result": sanitize_payload(result)
-            # })
+            # Calculate the total processing time
+            process_time = time.time() - start_time
+
+            # Log the successful event consumption
+            log_data = {
+                "trace_id": trace_id,
+                "process_time": f"{process_time:.4f}",  # Process time in seconds (up to 4 decimals)
+                "event_name": message_data.get("event_name"),
+                "status_code": 200
+            }
+
+            # Log success with status code 200
+            logger.info(f"Request completed successfully: {json.dumps(log_data)}", extra={
+                "trace_id": trace_id
+            })
 
             return result
+
         except json.JSONDecodeError as e:
-            logger.error(f"Error decoding message {method.delivery_tag}: {str(e)}", extra={
-                "trace_id": str(uuid.uuid4()),
-                "queue": method.routing_key
-            })
+            # Log the error with a 400 status code (Bad Request for malformed JSON)
+            process_time = time.time() - start_time
+            log_error(method, trace_id, process_time, 400, f"Error decoding message: {str(e)}", )
             raise
         except Exception as e:
-            logger.error(f"Error processing message {method.delivery_tag}: {str(e)}", extra={
-                "trace_id": trace_id_var.get(),
-                "queue": method.routing_key
-            })
+            # Log the error with a 500 status code (Internal Server Error)
+            process_time = time.time() - start_time
+            log_error(
+                trace_id=trace_id_var.get(),
+                process_time=process_time,
+                status_code=500,
+                error_message=f"Error processing message: {str(e)}",
+                event_name=message_data.get("event_name")
+            )
             raise
 
     return wrapper
+
+
+def log_error(trace_id, process_time, status_code, error_message, event_name):
+    """Helper function to log errors in the same format as success logs."""
+    log_data = {
+        "trace_id": trace_id,
+        "process_time": f"{process_time:.4f}" if process_time else "N/A",
+        "event_name": event_name,
+        "status_code": status_code,
+        "error": error_message
+    }
+
+    logger.error(f"Request failed: {json.dumps(log_data)}", extra={
+        "trace_id": trace_id
+    })

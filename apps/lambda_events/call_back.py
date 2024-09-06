@@ -15,7 +15,7 @@ def inventory_service_callback(ch, method, properties, body):
     trace_id = trace_id_var.get()
 
     data = {
-        'operation': body['operation'],
+        'event_name': body['event_name'],
         'products': body['product'],
         'trace_id': trace_id
     }

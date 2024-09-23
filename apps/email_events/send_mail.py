@@ -38,13 +38,14 @@ async def send_email(subject, receivers, html_content):
 async def register_mail(to, otp, name):
     template = env.get_template('register_email.html')
     content = template.render(otp=otp, name=name)
-
-    await send_email(
-        subject="Verification email",
-        receivers=[to],
-        html_content=content
-    )
-
+    try:
+        await send_email(
+            subject="Verification email",
+            receivers=[to],
+            html_content=content
+        )
+    except Exception as e:
+        print(f"Error sending email: {e}")
 
 async def forget_password_mail(to, otp, name):
     template = env.get_template('forget_password_email.html')

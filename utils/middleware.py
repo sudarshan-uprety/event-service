@@ -8,7 +8,7 @@ from .log import logger, trace_id_var
 SENSITIVE_FIELDS = ["password", "confirm_password", "token", "api_key"]
 
 
-def rabbitmq_event_handler(func):
+async def rabbitmq_event_handler(func):
     @functools.wraps(func)
     async def wrapper(ch, method, properties, body):
         # Start tracking process time

@@ -8,11 +8,11 @@ from utils.log import logger
 from utils.middleware import rabbitmq_event_handler
 
 
-@rabbitmq_event_handler
+# @rabbitmq_event_handler
 async def email_service_callback(message: IncomingMessage):
     async with message.process():
         try:
-            body_dict = json.loads(message.body)
+            body_dict = json.loads(message.body.decode())
             print('Email service, body is:', body_dict)
 
             # Determine event type and process accordingly

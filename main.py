@@ -12,6 +12,7 @@ from utils import response, helpers, constant, exceptions
 from apps.email_events.call_back import email_service_callback
 from apps.lambda_events.call_back import inventory_service_callback
 from apps.payment_events.call_back import payment_service_callback
+from routers import router
 
 app = FastAPI(
     title="FastAPI Event Consumer and Full Text Search API",
@@ -27,6 +28,8 @@ app.add_middleware(
     allow_headers=["*"],
     allow_credentials=True,
 )
+
+app.include_router(router)
 
 
 async def consume_messages():
@@ -63,11 +66,6 @@ async def consume_messages():
 async def startup_event():
     background_tasks = BackgroundTasks()
     background_tasks.add_task(consume_messages)
-
-
-@app.get("/")
-async def root():
-    return {"message": "Service is running"}
 
 
 @app.exception_handler(HTTPException)

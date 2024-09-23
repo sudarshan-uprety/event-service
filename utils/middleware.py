@@ -10,8 +10,8 @@ SENSITIVE_FIELDS = ["password", "confirm_password", "token", "api_key"]
 
 def rabbitmq_event_handler(func):
     @functools.wraps(func)
-    def wrapper(ch, method, properties, body):
-        # accessing this variable outside of try catch because to pass it to logger even if the exception occurred.
+    async def wrapper(ch, method, properties, body):
+        # Start tracking process time
         start_time = time.time()
         trace_id = str(uuid.uuid4())
         message_data = json.loads(body)
@@ -19,20 +19,19 @@ def rabbitmq_event_handler(func):
             trace_id = message_data.get('trace_id', trace_id)
             trace_id_var.set(trace_id)
 
-            result = func(ch, method, properties, body)
+            result = await func(ch, method, properties, body)
 
-            # Calculate the total processing time
+            # Calculate processing time
             process_time = time.time() - start_time
 
-            # Log the successful event consumption
+            # Log success
             log_data = {
                 "trace_id": trace_id,
-                "process_time": f"{process_time:.4f}",  # Process time in seconds (up to 4 decimals)
+                "process_time": f"{process_time:.4f}",
                 "event_name": message_data.get("event_name"),
                 "status_code": 200
             }
 
-            # Log success with status code 200
             logger.info(f"Request completed successfully: {json.dumps(log_data)}", extra={
                 "trace_id": trace_id
             })
@@ -40,12 +39,12 @@ def rabbitmq_event_handler(func):
             return result
 
         except json.JSONDecodeError as e:
-            # Log the error with a 400 status code (Bad Request for malformed JSON)
+            # Log JSON error with a 400 status
             process_time = time.time() - start_time
-            log_error(method, trace_id, process_time, 400, f"Error decoding message: {str(e)}", )
+            log_error(method, trace_id, process_time, 400, f"Error decoding message: {str(e)}")
             raise
         except Exception as e:
-            # Log the error with a 500 status code (Internal Server Error)
+            # Log any other exception with a 500 status
             process_time = time.time() - start_time
             log_error(
                 trace_id=trace_id_var.get(),

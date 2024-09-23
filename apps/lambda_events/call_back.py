@@ -7,7 +7,7 @@ from utils.log import trace_id_var
 import uuid
 
 
-@rabbitmq_event_handler
+# @rabbitmq_event_handler
 def inventory_service_callback(ch, method, properties, body):
     body = json.loads(body)
 

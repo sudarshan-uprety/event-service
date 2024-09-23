@@ -5,7 +5,7 @@ from jinja2 import Environment, FileSystemLoader
 from utils.variables import EMAIL_SENDER, EMAIL_PASSWORD, EMAIL_HOST, EMAIL_PORT
 from apps.email_events.schema import OrderEventEmail
 
-env = Environment(loader=FileSystemLoader("templates"))
+env = Environment(loader=FileSystemLoader("apps/email_events/templates"))
 
 
 async def connect_mail():

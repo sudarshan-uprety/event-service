@@ -35,6 +35,8 @@ async def email_service_callback(message: IncomingMessage):
                 logger.error(f"Unknown event name: {data.event_name}")
 
         except json.JSONDecodeError as e:
+            print('1', e)
             logger.error(f"Error decoding message: {str(e)}")
         except Exception as e:
+            print('2', e)
             logger.error(f"Error processing message: {str(e)}")

@@ -22,6 +22,7 @@ UNPROCESSABLE_ENTITY = 422
 ERROR_DOES_NOT_EXIST = "Resource Does Not Exist."
 ERROR_SERVER_DOWN = "Server Down"
 INTERNAL_SERVER_ERROR = "Internal Server Error"
+EMAIL_SERVER_ERROR = "Email Server Error"
 DATABASE_CONNECTION_ERRORS = [
     "is the server running", "failure in name resolution", "connection refused"
 ]

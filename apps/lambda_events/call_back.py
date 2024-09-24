@@ -2,12 +2,12 @@ import json
 
 from apps.lambda_events.call_lambda import call_lambda
 from apps.lambda_events.schema import InventoryProducer
-from utils.middleware import rabbitmq_event_handler
 from utils.log import trace_id_var
+from utils.middleware import async_rabbitmq_event_handler
 import uuid
 
 
-# @rabbitmq_event_handler
+@async_rabbitmq_event_handler
 def inventory_service_callback(ch, method, properties, body):
     body = json.loads(body)
 

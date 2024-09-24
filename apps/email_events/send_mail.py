@@ -8,44 +8,32 @@ from apps.email_events.schema import OrderEventEmail
 env = Environment(loader=FileSystemLoader("apps/email_events/templates"))
 
 
-async def connect_mail():
-    try:
-        # Async connection using aiosmtplib
-        mail = aiosmtplib.SMTP(hostname=EMAIL_HOST, port=EMAIL_PORT)
-        await mail.connect()
-        await mail.starttls()
-        await mail.login(EMAIL_SENDER, EMAIL_PASSWORD)
-        return mail
-    except Exception as e:
-        print(f"Error connecting to email server: {e}")
-        raise
+async def connect_mail(retries=3):
+    mail = aiosmtplib.SMTP(hostname=EMAIL_HOST, port=EMAIL_PORT, timeout=30)
+    await mail.connect()
+    await mail.login(EMAIL_SENDER, EMAIL_PASSWORD)
+    return mail
 
 
 async def send_email(subject, receivers, html_content):
-    try:
-        mail = await connect_mail()
-        await mail.sendmail(
-            EMAIL_SENDER,
-            receivers,
-            f"Subject: {subject}\nContent-Type: text/html\n\n{html_content}"
-        )
-        await mail.quit()
-    except Exception as e:
-        print(f"Error sending email: {e}")
-        raise
+    mail = await connect_mail()
+    await mail.sendmail(
+        EMAIL_SENDER,
+        receivers,
+        f"Subject: {subject}\nContent-Type: text/html\n\n{html_content}"
+    )
+    await mail.quit()
 
 
 async def register_mail(to, otp, name):
     template = env.get_template('register_email.html')
     content = template.render(otp=otp, name=name)
-    try:
-        await send_email(
-            subject="Verification email",
-            receivers=[to],
-            html_content=content
-        )
-    except Exception as e:
-        print(f"Error sending email: {e}")
+    await send_email(
+        subject="Verification email",
+        receivers=[to],
+        html_content=content
+    )
+
 
 async def forget_password_mail(to, otp, name):
     template = env.get_template('forget_password_email.html')

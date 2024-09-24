@@ -1,13 +1,14 @@
 import asyncio
 import json
 
-from fastapi import FastAPI, BackgroundTasks
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import (HTTPException, RequestValidationError)
 from aio_pika.exceptions import AMQPException
+from aiosmtplib.errors import SMTPException
+from starlette.middleware.base import BaseHTTPMiddleware
 
-
-from utils import response, helpers, constant, exceptions, consumer
+from utils import response, helpers, constant, exceptions, consumer, middleware
 from routers import router
 
 app = FastAPI(
@@ -30,7 +31,16 @@ app.include_router(router)
 
 @app.on_event("startup")
 async def startup_event():
-    asyncio.create_task(consumer.consume_rabbitmq())
+    app.state.background_task = asyncio.create_task(consumer.consume_rabbitmq())
+
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    app.state.background_task.cancel()
+    await app.state.background_task
+
+
+app.add_middleware(BaseHTTPMiddleware, dispatch=middleware.optimized_logging_middleware)
 
 
 @app.exception_handler(HTTPException)
@@ -68,3 +78,15 @@ async def json_exception_handler(_, exception):
 @app.exception_handler(AMQPException)
 async def amqp_exception_handler(_, exception):
     return response.error(constant.INTERNAL_SERVER_ERROR, str(exception))
+
+
+@app.exception_handler(SMTPException)
+async def smtp_exception_handler(_, exception):
+    print('email exception is', exception)
+    return response.error(constant.EMAIL_SERVER_ERROR, str(exception))
+
+
+@app.exception_handler(Exception)
+async def exception_handler(_, exception):
+    print('email exception is', exception)
+    return response.error(constant.UNPROCESSABLE_ENTITY, str(exception))

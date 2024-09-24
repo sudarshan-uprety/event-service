@@ -1,53 +1,53 @@
-from redmail import EmailSender
+import aiosmtplib
+
+from jinja2 import Environment, FileSystemLoader
 
 from utils.variables import EMAIL_SENDER, EMAIL_PASSWORD, EMAIL_HOST, EMAIL_PORT
-from utils.templates import templates
 from apps.email_events.schema import OrderEventEmail
 
-
-def connect_mail():
-    try:
-        mail = EmailSender(
-            host=EMAIL_HOST,
-            port=EMAIL_PORT,
-            username=EMAIL_SENDER,
-            password=EMAIL_PASSWORD,
-
-        )
-        return mail
-    except Exception as e:
-        print(e)
+env = Environment(loader=FileSystemLoader("apps/email_events/templates"))
 
 
-def register_mail(to, otp, name):
-    mail = connect_mail()
-    template = templates.get_template('register_email.html')
+async def connect_mail(retries=3):
+    mail = aiosmtplib.SMTP(hostname=EMAIL_HOST, port=EMAIL_PORT, timeout=30)
+    await mail.connect()
+    await mail.login(EMAIL_SENDER, EMAIL_PASSWORD)
+    return mail
+
+
+async def send_email(subject, receivers, html_content):
+    mail = await connect_mail()
+    await mail.sendmail(
+        EMAIL_SENDER,
+        receivers,
+        f"Subject: {subject}\nContent-Type: text/html\n\n{html_content}"
+    )
+    await mail.quit()
+
+
+async def register_mail(to, otp, name):
+    template = env.get_template('register_email.html')
     content = template.render(otp=otp, name=name)
-
-    mail.send(
+    await send_email(
         subject="Verification email",
-        sender=EMAIL_SENDER,
         receivers=[to],
-        html=content
+        html_content=content
     )
 
 
-def forget_password_mail(to, otp, name):
-    mail = connect_mail()
-    template = templates.get_template('forget_password_email.html')
+async def forget_password_mail(to, otp, name):
+    template = env.get_template('forget_password_email.html')
     content = template.render(otp=otp, name=name)
 
-    mail.send(
+    await send_email(
         subject="Forget password email",
-        sender=EMAIL_SENDER,
         receivers=[to],
-        html=content
+        html_content=content
     )
 
 
-def order_confirmation_mail(data: OrderEventEmail):
-    mail = connect_mail()
-    template = templates.get_template('orders_email.html')
+async def order_confirmation_mail(data: OrderEventEmail):
+    template = env.get_template('orders_email.html')
 
     context = {
         'order_number': data.order_id,
@@ -76,9 +76,8 @@ def order_confirmation_mail(data: OrderEventEmail):
     }
     content = template.render(context)
 
-    mail.send(
+    await send_email(
         subject=f"Order Confirmation #{data.order_id}",
-        sender=EMAIL_SENDER,
         receivers=[data.to],
-        html=content
+        html_content=content
     )

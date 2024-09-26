@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from pydantic import BaseModel
 
@@ -6,6 +6,8 @@ from pydantic import BaseModel
 class Product(BaseModel):
     product_id: str
     quantity: int
+    size: Optional[str] = None
+    color: Optional[str] = None
 
 
 class InventoryProducer(BaseModel):

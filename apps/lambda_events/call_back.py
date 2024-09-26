@@ -6,7 +6,6 @@ from apps.lambda_events.call_lambda import call_lambda
 from apps.lambda_events.schema import InventoryProducer
 from utils.log import trace_id_var
 from utils.middleware import async_rabbitmq_event_handler
-import uuid
 
 
 @async_rabbitmq_event_handler

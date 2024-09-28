@@ -10,6 +10,8 @@ services:
       - "host.docker.internal:host-gateway"
     environment:
       - ENV=dev
+    ports:
+      - "7001:7001"
 
   consumer-uat:
     build: .
@@ -20,6 +22,8 @@ services:
       - "host.docker.internal:host-gateway"
     environment:
       - ENV=uat
+    ports:
+      - "7002:7002"
 
   consumer-prod:
     build: .
@@ -30,3 +34,5 @@ services:
       - "host.docker.internal:host-gateway"
     environment:
       - ENV=prod
+    ports:
+      - "7000:7000"

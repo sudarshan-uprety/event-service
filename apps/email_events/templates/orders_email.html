@@ -41,7 +41,7 @@
 </head>
 <body>
     <div class="header">
-        <img src="logo.png" alt="Quick Cart Logo" class="logo">
+        <img src="https://microproductdev.s3.ap-south-1.amazonaws.com/uploads/logo/logo.png" alt="Quick Cart Logo" class="logo">
         <h1>Order Confirmation</h1>
     </div>
 
@@ -70,13 +70,13 @@
         <tr>
             <td>{{ item.name }}</td>
             <td>{{ item.quantity }}</td>
-            <td>${{ "%.2f"|format(item.price_per_item) }}</td>
-            <td>${{ "%.2f"|format(item.total) }}</td>
+            <td>{{ "%.2f"|format(item.price_per_item) }}</td>
+            <td>{{ "%.2f"|format(item.total) }}</td>
         </tr>
         {% endfor %}
         <tr>
             <td colspan="3"><strong>Total</strong></td>
-            <td><strong>${{ "%.2f"|format(total) }}</strong></td>
+            <td><strong>{{ "%.2f"|format(total) }}</strong></td>
         </tr>
     </table>
 </div>
@@ -84,7 +84,7 @@
     <div class="payment-details">
         <h3>Payment Information</h3>
         <p><strong>Payment ID:</strong> {{ payment_id }}</p>
-        <p><strong>Amount Paid:</strong> ${{ "%.2f"|format(payment_amount) }}</p>
+        <p><strong>Amount Paid:</strong> {{ "%.2f"|format(payment_amount) }}</p>
         <p><strong>Payment Type:</strong> {{ payment_type }}</p>
     </div>
 

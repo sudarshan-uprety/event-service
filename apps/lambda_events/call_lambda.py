@@ -1,4 +1,4 @@
-import aiohttp
+import httpx
 
 from utils.variables import LAMBDA_API, LAMBDA_API_KEY
 
@@ -9,24 +9,24 @@ async def call_lambda(data: dict):
         'X-API-KEY': LAMBDA_API_KEY,
         'Content-Type': 'application/json'
     }
-    body = data
-    async with aiohttp.ClientSession() as session:
+
+    async with httpx.AsyncClient() as client:
         try:
-            async with session.post(api_gateway_url, headers=headers, json=body) as response:
-                if response.status == 200:
-                    result = await response.text()
-                    return result
-                elif response.status == 400:
-                    return None
-                elif 400 < response.status < 500:
-                    await response.raise_for_status()
-                    return None
-                else:
-                    await response.raise_for_status()
-                    return None
-        except aiohttp.ClientResponseError as e:
-            raise
-        except aiohttp.ClientError as e:
+            response = await client.post(api_gateway_url, headers=headers, json=data)
+            response.raise_for_status()
+
+            if response.status_code == 200:
+                return response.text
+            elif response.status_code == 400:
+                return None
+            else:
+                return None
+        except httpx.HTTPStatusError as e:
+            if 400 < e.response.status_code < 500:
+                return None
+            else:
+                raise
+        except httpx.RequestError as e:
             raise
         except Exception as e:
             raise

@@ -1,5 +1,6 @@
 import asyncio
 import json
+import aiohttp
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -90,3 +91,14 @@ async def smtp_exception_handler(_, exception):
 async def exception_handler(_, exception):
     print('email exception is', exception)
     return response.error(constant.UNPROCESSABLE_ENTITY, str(exception))
+
+
+@app.exception_handler(aiohttp.ClientError)
+async def aiohttp_exception_handler(_, exception):
+    return response.error(constant.UNPROCESSABLE_ENTITY, str(exception))
+
+
+@app.exception_handler(aiohttp.ClientResponseError)
+async def aiohttp_exception_handler(_, exception):
+    return response.error(constant.UNPROCESSABLE_ENTITY, str(exception))
+

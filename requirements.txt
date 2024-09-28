@@ -29,3 +29,4 @@ aiohttp==3.10.7
 aio-pika==9.4.2
 aiosmtplib==3.0.2
 httpx==0.27.2
+uvicorn==0.31.0

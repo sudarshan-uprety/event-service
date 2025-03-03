@@ -69,11 +69,11 @@ pipeline {
                 script {
                     def composeUpCommand = ''
                     if (env.BRANCH_NAME == 'dev') {
-                        composeUpCommand = 'sudo docker-compose up --build -d auth_db_dev auth_service_dev'
+                        composeUpCommand = 'sudo docker-compose up --build -d consumer-dev'
                     } else if (env.BRANCH_NAME == 'uat') {
-                        composeUpCommand = 'sudo docker-compose up --build -d auth_db_uat auth_service_uat'
+                        composeUpCommand = 'sudo docker-compose up --build -d consumer-uat'
                     } else if (env.BRANCH_NAME == 'prod') {
-                        composeUpCommand = 'sudo docker-compose up --build -d auth_db_prod auth_service_prod'
+                        composeUpCommand = 'sudo docker-compose up --build -d consumer-prod'
                     } else {
                         error "Unexpected branch"
                     }

@@ -95,29 +95,22 @@ pipeline {
 
     post {
         always {
+            script {
+                commiterEmail = sh(script: "git show -s --format='%ae'", returnStdout: true).trim()
+            }
             cleanWs()
         }
         success {
-            script {
-                currentBuild.result = 'SUCCEsucceeded'
-                commiterEmail = sh(script: "git show -s --format='%ae'", returnStdout: true).trim()
-                // Send email
-                emailext body: '${DEFAULT_CONTENT}',
-                    to: commiterEmail, 
-                    subject: '${DEFAULT_SUBJECT}', 
-                    saveOutput: false
-            }
+            emailext body: '${DEFAULT_CONTENT}',
+                to: commiterEmail, 
+                subject: '${DEFAULT_SUBJECT}', 
+                saveOutput: false
         }
         failure {
-            script {
-                currentBuild.result = 'SUCCEEDED'
-                commiterEmail = sh(script: "git show -s --format='%ae'", returnStdout: true).trim()
-                // Send email
-                emailext body: '${DEFAULT_CONTENT}',
-                    to: commiterEmail, 
-                    subject: '${DEFAULT_SUBJECT}', 
-                    saveOutput: false
-            }
+            emailext body: '${DEFAULT_CONTENT}',
+                to: commiterEmail, 
+                subject: '${DEFAULT_SUBJECT}', 
+                saveOutput: false
         }
     }
 }

@@ -100,12 +100,6 @@ pipeline {
             }
             cleanWs()
         }
-        success {
-            emailext body: '${DEFAULT_CONTENT}',
-                to: commiterEmail, 
-                subject: '${DEFAULT_SUBJECT}', 
-                saveOutput: false
-        }
         failure {
             emailext body: '${DEFAULT_CONTENT}',
                 to: commiterEmail, 

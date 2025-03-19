@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent any 
 
     environment {
         PROD_ENV = 'ES_PROD_ENV'

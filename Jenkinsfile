@@ -28,7 +28,7 @@ pipeline {
                         envFileCredentialId = env.DEV_ENV
                     } else {
                         error "This branch does not have corresponding environment variables"
-                    }
+                    } 
 
                     echo "Selected env file credential: ${envFileCredentialId}"
 

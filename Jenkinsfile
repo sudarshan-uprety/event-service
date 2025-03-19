@@ -41,7 +41,7 @@ pipeline {
                             echo "Attempting to copy the env file..."
                             cp "$ENV_FILE" .env
                             echo "Successfully copied the env file."
-                        '''
+                        ''' 
                     }
                 }
             }

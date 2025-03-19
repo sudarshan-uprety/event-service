@@ -13,7 +13,7 @@ pipeline {
             steps {
                 checkout scm
             }
-        }
+        } 
 
         stage('Create .env File') {
             steps {

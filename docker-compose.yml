@@ -12,6 +12,8 @@ services:
       - ENV=dev
     ports:
       - "7001:7001"
+    networks:
+      - ms
 
   consumer-uat:
     build: .
@@ -24,6 +26,8 @@ services:
       - ENV=uat
     ports:
       - "7002:7002"
+    networks:
+      - ms
 
   consumer-prod:
     build: .
@@ -36,3 +40,9 @@ services:
       - ENV=prod
     ports:
       - "7000:7000"
+    networks:
+      - ms
+
+networks:
+  ms:
+    external: true

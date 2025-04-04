@@ -11,7 +11,7 @@ from aio_pika.exceptions import AMQPException
 from aiosmtplib.errors import SMTPException
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from utils import response, helpers, constant, exceptions, consumer, middleware
+from utils import response, helpers, constant, exceptions, middleware, grpc_auth
 from routers import router
 from apps.email_events.proto import email_pb2_grpc
 from apps.grpc_client.email import EmailService
@@ -34,7 +34,7 @@ app.add_middleware(
 app.include_router(router)
 
 async def grpc_serve():
-    grpc_server = grpc.aio.server()
+    grpc_server = grpc.aio.server(interceptors=[grpc_auth.APIKeyInterceptor()])
     email_pb2_grpc.add_EmailServiceServicer_to_server(EmailService(), grpc_server)
     grpc_server.add_insecure_port('localhost:50051')
     await grpc_server.start()
@@ -46,10 +46,10 @@ async def startup_event():
     # app.state.background_task = asyncio.create_task(consumer.consume_rabbitmq())
 
 
-@app.on_event("shutdown")
-async def shutdown_event():
-    app.state.background_task.cancel()
-    await app.state.background_task
+# @app.on_event("shutdown")
+# async def shutdown_event():
+#     app.state.background_task.cancel()
+#     await app.state.background_task
 
 
 app.add_middleware(BaseHTTPMiddleware, dispatch=middleware.optimized_logging_middleware)

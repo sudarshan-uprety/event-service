@@ -1,5 +1,3 @@
-import json
-import grpc
 from apps.email_events.proto import email_pb2, email_pb2_grpc
 from utils import variables
 from apps.email_events.schema import RegisterEmail, OrderEventEmail

@@ -1,6 +1,7 @@
 import asyncio
 import httpx
 import json
+import grpc
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -12,6 +13,8 @@ from starlette.middleware.base import BaseHTTPMiddleware
 
 from utils import response, helpers, constant, exceptions, consumer, middleware
 from routers import router
+from apps.email_events.proto import email_pb2_grpc
+from apps.grpc_client.email import EmailService
 
 app = FastAPI(
     title="FastAPI Event Consumer and Full Text Search API",
@@ -30,10 +33,17 @@ app.add_middleware(
 
 app.include_router(router)
 
+async def grpc_serve():
+    grpc_server = grpc.aio.server()
+    email_pb2_grpc.add_EmailServiceServicer_to_server(EmailService(), grpc_server)
+    grpc_server.add_insecure_port('localhost:50051')
+    await grpc_server.start()
+    await grpc_server.wait_for_termination()
 
 @app.on_event("startup")
 async def startup_event():
-    app.state.background_task = asyncio.create_task(consumer.consume_rabbitmq())
+    asyncio.create_task(grpc_serve())
+    # app.state.background_task = asyncio.create_task(consumer.consume_rabbitmq())
 
 
 @app.on_event("shutdown")

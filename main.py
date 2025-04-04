@@ -15,6 +15,8 @@ from utils import response, helpers, constant, exceptions, middleware, grpc_auth
 from routers import router
 from apps.email_events.proto import email_pb2_grpc
 from apps.grpc_client.email import EmailService
+from apps.lambda_events.proto import aws_lambda_pb2_grpc
+from apps.grpc_client.aws_lambda import LambdaService
 
 app = FastAPI(
     title="FastAPI Event Consumer and Full Text Search API",
@@ -36,6 +38,7 @@ app.include_router(router)
 async def grpc_serve():
     grpc_server = grpc.aio.server(interceptors=[grpc_auth.APIKeyInterceptor()])
     email_pb2_grpc.add_EmailServiceServicer_to_server(EmailService(), grpc_server)
+    aws_lambda_pb2_grpc.add_InventoryServiceServicer_to_server(LambdaService(), grpc_server)
     grpc_server.add_insecure_port('localhost:50051')
     await grpc_server.start()
     await grpc_server.wait_for_termination()

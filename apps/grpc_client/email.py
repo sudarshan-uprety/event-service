@@ -28,3 +28,8 @@ class EmailService(email_pb2_grpc.EmailServiceServicer):
             await forget_password_mail(to=data.to, name=data.full_name, otp=data.otp)
         elif data.event_name == variables.ORDER_CONFIRMATION_EMAIL:
             await order_confirmation_mail(data)
+        
+        return email_pb2.EmailResponse(
+            message="Email sent successfully",
+            success=True
+        )

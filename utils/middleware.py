@@ -129,3 +129,51 @@ def log_error(trace_id, process_time, status_code, error_message, event_name):
     }
 
     logger.error(f"Event processing failed: {json.dumps(log_data)}", extra={"trace_id": trace_id})
+
+
+
+def grpc_logging_decorator(func):
+    """
+    A decorator to log the trace_id, environment (env), service name, and message before making a gRPC call.
+    Logs that a gRPC call was made along with trace information.
+    """
+    @wraps(func)
+    async def wrapper(*args, **kwargs):
+        # Get the trace_id from the metadata or create a new one if not available
+        trace_id = str(uuid.uuid4())
+        
+        if len(args) > 1:
+            request = args[1]
+            # Extract trace_id from the request (assuming it's a field in the request)
+            trace_id = getattr(request, 'trace_id')
+            event_name = getattr(request, 'event_name')
+
+        # Log the trace_id and other relevant information before processing the gRPC call
+        start_time = time.time()
+        
+        try:
+            response = await func(*args, **kwargs)
+
+            process_time = time.time() - start_time
+            log_data = {
+                "trace_id": trace_id,
+                "process_time": f"{process_time:.4f}",
+                "event_name": event_name
+            }
+            logger.info(f"gRPC request processed successfully: {json.dumps(log_data)}", extra={"trace_id": trace_id})
+            return response
+
+        except Exception as e:
+            # Log the error and include process time and trace information
+            process_time = time.time() - start_time
+            log_data = {
+                "trace_id": trace_id,
+                "process_time": f"{process_time:.4f}",
+                "status_code": 500,
+                "event_name": kwargs.get('event_name', 'unknown_event'),
+                "error_message": str(e)
+            }
+            logger.error(f"gRPC request failed: {json.dumps(log_data)}", extra={"trace_id": trace_id})
+            raise e  # Re-raise the exception for global error handling
+
+    return wrapper

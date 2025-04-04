@@ -2,8 +2,10 @@ from apps.email_events.proto import email_pb2, email_pb2_grpc
 from utils import variables
 from apps.email_events.schema import RegisterEmail, OrderEventEmail
 from apps.email_events.send_mail import register_mail, forget_password_mail, order_confirmation_mail
+from utils.middleware import grpc_logging_decorator
 
 class EmailService(email_pb2_grpc.EmailServiceServicer):
+    @grpc_logging_decorator
     async def RegisterSendEmail(self, request, context):
         # Convert gRPC request to dict (you can use `.dict()` if using Pydantic)
         body_dict = {
@@ -26,6 +28,7 @@ class EmailService(email_pb2_grpc.EmailServiceServicer):
             success=True
         )
 
+    @grpc_logging_decorator
     async def ForgetPasswordSendEmail(self, request, context):
         # Convert gRPC request to dict (you can use `.dict()` if using Pydantic)
         body_dict = {
@@ -48,7 +51,7 @@ class EmailService(email_pb2_grpc.EmailServiceServicer):
             success=True
         )
 
-
+    @grpc_logging_decorator
     async def OrderConfirmationSendEmail(self, request, context):
         # Handling Order Confirmation Email event
         products_list = []

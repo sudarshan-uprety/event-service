@@ -11,14 +11,12 @@ class LambdaService(aws_lambda_pb2_grpc.InventoryServiceServicer):
             "event_name": request.event_name,
             "products": self.convert_products_to_dict(request.products)
         }
-        for product in request.products:
-            print(f"Received product: {product.product_id}, {product.quantity}, {product.size}, {product.color}")
-
-        await call_lambda(data=body_dict)
+        
+        data = await call_lambda(data=body_dict)
 
         return aws_lambda_pb2.ProcessEventResponse(
-            message="Event processed successfully",
-            success=True
+            message=data['message'],
+            success=data['success']
         )
 
     def convert_products_to_dict(self, products):

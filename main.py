@@ -45,7 +45,7 @@ async def grpc_serve():
 
 @app.on_event("startup")
 async def startup_event():
-    asyncio.create_task(grpc_serve())
+    app.state.background_task = asyncio.create_task(grpc_serve())
     # app.state.background_task = asyncio.create_task(consumer.consume_rabbitmq())
 
 

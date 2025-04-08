@@ -1,7 +1,7 @@
 import json
 from aio_pika import IncomingMessage
 
-from apps.email_events.schema import RegisterEmail, OrderEventEmail
+from apps.email_events.schema import RegisterAndForgetPasswordEmail, OrderEventEmail
 from apps.email_events.send_mail import register_mail, forget_password_mail, order_confirmation_mail
 from utils import variables
 from utils.log import logger
@@ -14,7 +14,7 @@ async def email_service_callback(message: IncomingMessage):
 
     # Process the event based on event name
     if body_dict['event_name'] in [variables.REGISTER_EMAIL, variables.FORGET_PASSWORD_EMAIL]:
-        data = RegisterEmail(**body_dict)
+        data = RegisterAndForgetPasswordEmail(**body_dict)
     elif body_dict['event_name'] == variables.ORDER_CONFIRMATION_EMAIL:
         data = OrderEventEmail(**body_dict)
     else:

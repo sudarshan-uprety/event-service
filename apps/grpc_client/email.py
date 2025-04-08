@@ -1,6 +1,6 @@
 from apps.email_events.proto import email_pb2, email_pb2_grpc
 from utils import variables
-from apps.email_events.schema import RegisterEmail, OrderEventEmail
+from apps.email_events.schema import RegisterAndForgetPasswordEmail, OrderEventEmail
 from apps.email_events.send_mail import register_mail, forget_password_mail, order_confirmation_mail
 from utils.middleware import grpc_logging_decorator
 
@@ -17,7 +17,7 @@ class EmailService(email_pb2_grpc.EmailServiceServicer):
         }
         # Handle event based on name
         if request.event_name == variables.REGISTER_EMAIL:
-            data = RegisterEmail(**body_dict)
+            data = RegisterAndForgetPasswordEmail(**body_dict)
         else:
             return email_pb2.EmailResponse(success=False, message="Unknown event")
 
@@ -40,7 +40,7 @@ class EmailService(email_pb2_grpc.EmailServiceServicer):
         }
         # Handle event based on name
         if request.event_name == variables.FORGET_PASSWORD_EMAIL:
-            data = RegisterEmail(**body_dict)
+            data = RegisterAndForgetPasswordEmail(**body_dict)
         else:
             return email_pb2.EmailResponse(success=False, message="Unknown event")
 

@@ -28,7 +28,7 @@ class PaymentInfo(BaseModel):
     payment_type: str
 
 
-class RegisterEmail(BaseModel):
+class RegisterAndForgetPasswordEmail(BaseModel):
     event_name: str
     trace_id: str
     to: EmailStr
@@ -36,12 +36,12 @@ class RegisterEmail(BaseModel):
     full_name: str
 
 
-class ForgetPasswordEmail(BaseModel):
-    event_name: str
-    trace_id: str
-    to: EmailStr
-    otp: str
-    full_name: str
+# class ForgetPasswordEmail(BaseModel):
+#     event_name: str
+#     trace_id: str
+#     to: EmailStr
+#     otp: str
+#     full_name: str
 
 
 class ProductItem(BaseModel):
